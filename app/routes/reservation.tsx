@@ -96,7 +96,7 @@ const mockAreas = [
   {
     id: "3",
     name: "Reserva de Mesa",
-    basePrice: 100,
+    basePrice: 0,
     minPeople: 1,
     maxPeople: 12,
     openTime: "18:00",
@@ -177,7 +177,7 @@ export default function Reservation() {
   const finalProductsTotal = productsTotal - productDiscountValue;
 
   const finalTotal = finalReservationPrice + finalProductsTotal;
-  const UPFRONT_FEE = 50;
+  const UPFRONT_FEE = area.name === "Reserva de Mesa" ? 0 : 50;
   const remainingTotal = Math.max(0, finalTotal - UPFRONT_FEE);
 
   const peopleCount = parseInt(people) || 1;
@@ -506,27 +506,44 @@ export default function Reservation() {
                   )}
 
                   <div className="pt-4 border-t border-white/10">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-xl font-bold text-white">Sinal (Pagar Agora)</span>
-                      <span className="text-3xl font-extrabold text-[#ffcc29]">{formatCurrency(UPFRONT_FEE)}</span>
-                    </div>
-                    
-                    <div className="mt-4 pt-4 border-t border-white/5 space-y-2">
-                      <div className="flex justify-between items-center text-white/70 text-sm">
-                        <span>Total Estimado (Reserva + Produtos)</span>
-                        <span>{formatCurrency(finalTotal)}</span>
-                      </div>
-                      <div className="flex justify-between items-center text-emerald-400 font-bold text-sm">
-                        <span>Restante a Pagar no Local</span>
-                        <span>{formatCurrency(remainingTotal)}</span>
-                      </div>
-                      {peopleCount > 1 && (
-                        <div className="flex justify-between items-center text-emerald-400/50 text-xs">
-                          <span>Rateio no Local ({peopleCount} pessoas)</span>
-                          <span>{formatCurrency(remainingPerPerson)} / pessoa</span>
+                    {UPFRONT_FEE > 0 ? (
+                      <>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xl font-bold text-white">Sinal (Pagar Agora)</span>
+                          <span className="text-3xl font-extrabold text-[#ffcc29]">{formatCurrency(UPFRONT_FEE)}</span>
                         </div>
-                      )}
-                    </div>
+
+                        <div className="mt-4 pt-4 border-t border-white/5 space-y-2">
+                          <div className="flex justify-between items-center text-white/70 text-sm">
+                            <span>Total Estimado (Reserva + Produtos)</span>
+                            <span>{formatCurrency(finalTotal)}</span>
+                          </div>
+                          <div className="flex justify-between items-center text-emerald-400 font-bold text-sm">
+                            <span>Restante a Pagar no Local</span>
+                            <span>{formatCurrency(remainingTotal)}</span>
+                          </div>
+                          {peopleCount > 1 && (
+                            <div className="flex justify-between items-center text-emerald-400/50 text-xs">
+                              <span>Rateio no Local ({peopleCount} pessoas)</span>
+                              <span>{formatCurrency(remainingPerPerson)} / pessoa</span>
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-xl font-bold text-white">Total da Reserva</span>
+                          <span className="text-3xl font-extrabold text-[#ffcc29]">{formatCurrency(finalTotal)}</span>
+                        </div>
+                        {peopleCount > 1 && finalTotal > 0 && (
+                          <div className="mt-2 flex justify-between items-center text-emerald-400/50 text-xs">
+                            <span>Rateio no Local ({peopleCount} pessoas)</span>
+                            <span>{formatCurrency(finalTotal / peopleCount)} / pessoa</span>
+                          </div>
+                        )}
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -535,13 +552,15 @@ export default function Reservation() {
                   disabled={isSubmitting}
                   className={`w-full py-4 mt-4 rounded-2xl ${isSubmitting ? 'bg-[#ffcc29]/50 cursor-not-allowed' : 'bg-[#ffcc29] hover:bg-[#f8bd2f] hover:shadow-[0_0_20px_rgba(255,204,41,0.4)]'} text-[#1a261e] text-lg font-bold transition-all active:scale-[0.98] flex items-center justify-center gap-2`}
                 >
-                  {isSubmitting ? "Processando..." : "Confirmar e Pagar"}
+                  {isSubmitting ? "Processando..." : (UPFRONT_FEE > 0 ? "Confirmar e Pagar" : "Confirmar Reserva")}
                   {!isSubmitting && <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>}
                 </button>
 
-                <p className="text-xs text-center text-white/70 mt-4 leading-relaxed px-2 bg-black/20 p-3 rounded-xl border border-white/5">
-                  <strong>Atenção:</strong> Será cobrada uma taxa de confirmação de <strong>{formatCurrency(UPFRONT_FEE)}</strong> agora. Em caso de cancelamento, este valor não é reembolsável (fica retido pelo estabelecimento). O restante da consumação e reserva será pago no dia do evento.
-                </p>
+                {UPFRONT_FEE > 0 && (
+                  <p className="text-xs text-center text-white/70 mt-4 leading-relaxed px-2 bg-black/20 p-3 rounded-xl border border-white/5">
+                    <strong>Atenção:</strong> Será cobrada uma taxa de confirmação de <strong>{formatCurrency(UPFRONT_FEE)}</strong> agora. Em caso de cancelamento, este valor não é reembolsável (fica retido pelo estabelecimento). O restante da consumação e reserva será pago no dia do evento.
+                  </p>
+                )}
 
                 {area.hasDiscountProducts && !area.applyExcessToProducts && (
                   <>
