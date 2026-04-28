@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import type { Route } from "./+types/home";
 
@@ -30,16 +30,29 @@ const areas = [
 
 export default function Home() {
   const [tablePeople, setTablePeople] = useState(2);
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const incrementPeople = () => setTablePeople(p => Math.min(p + 1, 50));
   const decrementPeople = () => setTablePeople(p => Math.max(p - 1, 1));
 
   return (
     <div className="min-h-screen bg-[#1a261e] text-white font-sans selection:bg-[#006b3e]/50">
-      <header className="py-4 px-6 border-b border-white/10 bg-[#006b3e]/90 backdrop-blur-xl sticky top-0 z-50">
+      <header className="py-4 px-6 border-b border-white/10 bg-[#006b3e]/90 backdrop-blur-xl sticky top-0 z-50 transition-all duration-300">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            <img src="/logo.svg" alt="Booking Area Logo" className="h-10 sm:h-12 w-auto drop-shadow-md" />
+          <div className="flex items-center gap-8 h-10 sm:h-12">
+            <img 
+              src="/logo.svg" 
+              alt="Booking Area Logo" 
+              className="h-10 sm:h-12 w-auto drop-shadow-md transition-opacity duration-300"
+              style={{ opacity: Math.min(1, scrollY / 150) }}
+            />
           </div>
           <nav className="hidden md:flex items-center gap-8">
             <a href="#" className="text-white/80 font-medium hover:text-white transition-colors">Início</a>
@@ -52,7 +65,17 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-16 sm:py-24">
+      <main className="max-w-7xl mx-auto px-6 py-8 sm:py-12">
+        <div 
+          className="flex justify-center mb-12 sm:mb-20 transition-all duration-75 ease-out origin-center pointer-events-none"
+          style={{ 
+            opacity: Math.max(0, 1 - scrollY / 250),
+            transform: `scale(${Math.max(0.6, 1 - scrollY / 300)}) translateY(${scrollY * 0.3}px)`,
+          }}
+        >
+          <img src="/logo.svg" alt="Booking Area Logo Grande" className="h-40 sm:h-56 lg:h-64 w-auto drop-shadow-2xl" />
+        </div>
+
         <div className="text-center mb-16 sm:mb-24">
           <h2 className="text-4xl sm:text-6xl font-extrabold mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
             Escolha seu espaço
