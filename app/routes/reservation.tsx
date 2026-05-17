@@ -67,17 +67,17 @@ const mockAreas = [
     observations: "Acesso exclusivo à área VIP com atendimento dedicado. Proibida entrada de menores de 18 anos.",
     image: "/lounge_area.png",
     products: [
-      { id: "p1", name: "Balde de Heineken (10 un)", price: 120, discountPercent: 100, category: "Cervejas" },
-      { id: "p2", name: "Balde de Budweiser (10 un)", price: 130, discountPercent: 100, category: "Cervejas" },
-      { id: "p3", name: "Combo Absolut + RedBull", price: 350, discountPercent: 100, category: "Destilados" },
-      { id: "p4", name: "Combo Gin Beefeater + Tônica", price: 400, discountPercent: 100, category: "Destilados" },
-      { id: "p5", name: "Chandon + 4 Energéticos", price: 450, discountPercent: 100, category: "Destilados" },
-      { id: "p6", name: "Pack de Sucos (6 un)", price: 60, discountPercent: 100, category: "Sem Álcool" },
-      { id: "p7", name: "Água + Refrigerante Pack (12 un)", price: 80, discountPercent: 100, category: "Sem Álcool" },
-      { id: "p8", name: "Picanha 1kg", price: 160, discountPercent: 100, category: "Combo de Carnes" },
-      { id: "p9", name: "Frango Temperado 1kg", price: 90, discountPercent: 100, category: "Combo de Carnes" },
-      { id: "p10", name: "Churrasqueiro", price: 200, discountPercent: 100, category: "Serviços" },
-      { id: "p11", name: "Atendente Particular", price: 150, discountPercent: 100, category: "Serviços" },
+      { id: "p1", name: "Balde de Heineken (10 un)", price: 120, discountPercent: 100, category: "Cervejas", obs: "Long neck gelada, servida em balde com gelo." },
+      { id: "p2", name: "Balde de Budweiser (10 un)", price: 130, discountPercent: 100, category: "Cervejas", obs: "Long neck gelada, servida em balde com gelo." },
+      { id: "p3", name: "Combo Absolut + RedBull", price: 350, discountPercent: 100, category: "Destilados", obs: "1 garrafa Absolut 750ml + 4 latas RedBull." },
+      { id: "p4", name: "Combo Gin Beefeater + Tônica", price: 400, discountPercent: 100, category: "Destilados", obs: "1 garrafa Beefeater 750ml + 4 tônicas + limão e gelo." },
+      { id: "p5", name: "Chandon + 4 Energéticos", price: 450, discountPercent: 100, category: "Destilados", obs: "1 garrafa Chandon Brut 750ml + 4 energéticos à escolha." },
+      { id: "p6", name: "Pack de Sucos (6 un)", price: 60, discountPercent: 100, category: "Sem Álcool", obs: "Sabores variados: laranja, uva, maracujá e manga." },
+      { id: "p7", name: "Água + Refrigerante Pack (12 un)", price: 80, discountPercent: 100, category: "Sem Álcool", obs: "6 águas 500ml + 6 refrigerantes lata (Coca, Guaraná, Sprite)." },
+      { id: "p8", name: "Picanha 1kg", price: 160, discountPercent: 100, category: "Combo de Carnes", obs: "Picanha temperada, pronta para grelhar." },
+      { id: "p9", name: "Frango Temperado 1kg", price: 90, discountPercent: 100, category: "Combo de Carnes", obs: "Coxa e sobrecoxa marinadas com tempero da casa." },
+      { id: "p10", name: "Churrasqueiro", price: 200, discountPercent: 100, category: "Serviços", obs: "Profissional exclusivo para o preparo e corte das carnes durante o evento." },
+      { id: "p11", name: "Atendente Particular", price: 150, discountPercent: 100, category: "Serviços", obs: "Garçom dedicado à sua área durante todo o evento." },
     ]
   },
   {
@@ -93,20 +93,20 @@ const mockAreas = [
     observations: "Espaço isolado perfeito para comemorações particulares. Som independente.",
     image: "/private_room.png",
     products: [
-      { id: "p1", name: "24 Heineken 600ml", price: 408, discountPercent: 30, category: "Cervejas" },
-      { id: "p2", name: "24 Amstel 600ml", price: 360, discountPercent: 30, category: "Cervejas" },
-      { id: "p3", name: "12 Antarctica Litão", price: 192, discountPercent: 35, category: "Cervejas" },
-      { id: "p4", name: "24 Antarctica 600ml", price: 312, discountPercent: 30, category: "Cervejas" },
-      { id: "p5", name: "Whisky Jack Daniel's 1L", price: 220, discountPercent: 30, category: "Destilados" },
-      { id: "p6", name: "Vodka Absolut 1L", price: 180, discountPercent: 30, category: "Destilados" },
-      { id: "p7", name: "Gin Beefeater 1L", price: 190, discountPercent: 30, category: "Destilados" },
-      { id: "p8", name: "Pack Refrigerante (12 un)", price: 96, discountPercent: 30, category: "Sem Álcool" },
-      { id: "p9", name: "Pack de Água (12 un)", price: 60, discountPercent: 30, category: "Sem Álcool" },
-      { id: "p10", name: "Combo Churrasco Completo", price: 380, discountPercent: 30, category: "Combo de Carnes" },
-      { id: "p11", name: "Picanha 2kg", price: 320, discountPercent: 30, category: "Combo de Carnes" },
-      { id: "p12", name: "Frango Temperado 2kg", price: 160, discountPercent: 30, category: "Combo de Carnes" },
-      { id: "p13", name: "Churrasqueiro", price: 200, discountPercent: 30, category: "Serviços" },
-      { id: "p14", name: "Atendente Particular", price: 150, discountPercent: 30, category: "Serviços" },
+      { id: "p1", name: "24 Heineken 600ml", price: 408, discountPercent: 30, category: "Cervejas", obs: "Caixas lacradas, entregues geladas no início do evento." },
+      { id: "p2", name: "24 Amstel 600ml", price: 360, discountPercent: 30, category: "Cervejas", obs: "Caixas lacradas, entregues geladas no início do evento." },
+      { id: "p3", name: "12 Antarctica Litão", price: 192, discountPercent: 35, category: "Cervejas", obs: "Garrafas 1L, ideais para grupos grandes. Entregues geladas." },
+      { id: "p4", name: "24 Antarctica 600ml", price: 312, discountPercent: 30, category: "Cervejas", obs: "Caixas lacradas, entregues geladas no início do evento." },
+      { id: "p5", name: "Whisky Jack Daniel's 1L", price: 220, discountPercent: 30, category: "Destilados", obs: "Garrafa 1L + gelo e copos fornecidos." },
+      { id: "p6", name: "Vodka Absolut 1L", price: 180, discountPercent: 30, category: "Destilados", obs: "Garrafa 1L + gelo e copos fornecidos." },
+      { id: "p7", name: "Gin Beefeater 1L", price: 190, discountPercent: 30, category: "Destilados", obs: "Garrafa 1L + 4 tônicas, limão e gelo." },
+      { id: "p8", name: "Pack Refrigerante (12 un)", price: 96, discountPercent: 30, category: "Sem Álcool", obs: "Latas variadas: Coca-Cola, Guaraná Antarctica e Sprite." },
+      { id: "p9", name: "Pack de Água (12 un)", price: 60, discountPercent: 30, category: "Sem Álcool", obs: "Garrafas 500ml, geladas." },
+      { id: "p10", name: "Combo Churrasco Completo", price: 380, discountPercent: 30, category: "Combo de Carnes", obs: "Picanha 1kg + costela 1kg + linguiça 500g + frango 1kg, tudo temperado." },
+      { id: "p11", name: "Picanha 2kg", price: 320, discountPercent: 30, category: "Combo de Carnes", obs: "Picanha temperada, pronta para grelhar." },
+      { id: "p12", name: "Frango Temperado 2kg", price: 160, discountPercent: 30, category: "Combo de Carnes", obs: "Coxa e sobrecoxa marinadas com tempero da casa." },
+      { id: "p13", name: "Churrasqueiro", price: 200, discountPercent: 30, category: "Serviços", obs: "Profissional exclusivo para o preparo e corte das carnes durante o evento." },
+      { id: "p14", name: "Atendente Particular", price: 150, discountPercent: 30, category: "Serviços", obs: "Garçom dedicado à sua área durante todo o evento." },
     ]
   },
   {
@@ -413,7 +413,10 @@ export default function Reservation() {
                         >
                           <div className="flex-1 min-w-0 mr-4">
                             <p className="font-semibold text-white text-sm">{product.name}</p>
-                            <div className="flex items-center gap-2 mt-1">
+                            {product.obs && (
+                              <p className="text-white/40 text-xs mt-0.5 leading-relaxed">{product.obs}</p>
+                            )}
+                            <div className="flex items-center gap-2 mt-1.5">
                               <span className="text-[#ffcc29] text-sm font-medium">{formatCurrency(product.price)}</span>
                               <span className="text-xs text-emerald-400/80 bg-emerald-400/8 border border-emerald-400/15 px-2 py-0.5 rounded-full">
                                 -{product.discountPercent}% na reserva
