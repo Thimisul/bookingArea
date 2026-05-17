@@ -36,9 +36,7 @@ export async function action({ request }: Route.ActionArgs) {
   try {
     const response = await fetch(webhookUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
 
@@ -121,7 +119,6 @@ export default function Reservation() {
   const [area, setArea] = useState<typeof mockAreas[0] | null>(null);
   const [cart, setCart] = useState<{ [key: string]: number }>({});
 
-  // Form State
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
@@ -131,16 +128,11 @@ export default function Reservation() {
   const [people, setPeople] = useState("");
 
   useEffect(() => {
-    // Simulando fetch de API
     const foundArea = mockAreas.find(a => a.id === id);
     if (foundArea) {
       setArea(foundArea);
-
-      // Pre-fill people if came from query params (e.g. Table reservation)
       const peopleParam = searchParams.get("people");
-      if (peopleParam) {
-        setPeople(peopleParam);
-      }
+      if (peopleParam) setPeople(peopleParam);
     }
   }, [id, searchParams]);
 
@@ -154,10 +146,17 @@ export default function Reservation() {
   }, [actionData, navigate]);
 
   if (!area) {
-    return <div className="min-h-screen bg-[#1a261e] flex items-center justify-center text-white">Carregando detalhes da reserva...</div>;
+    return (
+      <div className="min-h-screen bg-[#1a261e] flex items-center justify-center">
+        <div className="flex items-center gap-3 text-white/50">
+          <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          Carregando...
+        </div>
+      </div>
+    );
   }
 
-  // Lógica de cálculo de totais
+  // Cálculo de totais
   const productsTotal = Object.entries(cart).reduce((sum, [pId, qty]) => {
     const prod = area.products?.find((p: any) => p.id === pId);
     return sum + (prod ? prod.price * qty : 0);
@@ -171,11 +170,9 @@ export default function Reservation() {
 
   const actualDiscountValue = Math.min(discountValue, area.basePrice);
   const finalReservationPrice = area.basePrice - actualDiscountValue;
-
   const excessDiscountValue = area.applyExcessToProducts ? Math.max(0, discountValue - area.basePrice) : 0;
   const productDiscountValue = Math.min(excessDiscountValue, productsTotal);
   const finalProductsTotal = productsTotal - productDiscountValue;
-
   const finalTotal = finalReservationPrice + finalProductsTotal;
   const UPFRONT_FEE = area.name === "Reserva de Mesa" ? 0 : 50;
   const remainingTotal = Math.max(0, finalTotal - UPFRONT_FEE);
@@ -186,7 +183,6 @@ export default function Reservation() {
   const reservationPerPerson = area.basePrice / peopleCount;
   const remainingReservationPerPerson = finalReservationPrice / peopleCount;
 
-  // Gerenciamento do Carrinho
   const updateCart = (pId: string, delta: number) => {
     setCart(prev => {
       const current = prev[pId] || 0;
@@ -200,30 +196,23 @@ export default function Reservation() {
     });
   };
 
-  // Data mínima (amanhã)
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   const minDateString = tomorrow.toISOString().split("T")[0];
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
-  };
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
 
   const generateDateTime = (dateStr: string, timeStr: string, isEnd: boolean = false, startStr: string = "00:00") => {
     const [startH] = startStr.split(":").map(Number);
     const [timeH] = timeStr.split(":").map(Number);
-
     const targetDate = new Date(`${dateStr}T00:00:00`);
-    if (isEnd && timeH < startH) {
-      targetDate.setDate(targetDate.getDate() + 1);
-    }
-
+    if (isEnd && timeH < startH) targetDate.setDate(targetDate.getDate() + 1);
     const formattedDate = targetDate.toISOString().split("T")[0];
     const offset = -new Date().getTimezoneOffset();
     const sign = offset >= 0 ? '+' : '-';
     const pad = (num: number) => String(num).padStart(2, '0');
     const tz = `${sign}${pad(Math.floor(Math.abs(offset) / 60))}:${pad(Math.abs(offset) % 60)}`;
-
     return `${formattedDate}T${timeStr}:00${tz}`;
   };
 
@@ -232,199 +221,161 @@ export default function Reservation() {
       alert("Por favor, preencha todos os campos obrigatórios da reserva.");
       return;
     }
-
     const startDateTime = generateDateTime(date, startTime);
     const endDateTime = generateDateTime(date, endTime, true, startTime);
-
     submit({
       areaId: area.id,
       areaName: area.name,
-      name,
-      email,
-      phone,
-      date,
-      startTime,
-      endTime,
-      startDateTime,
-      endDateTime,
-      people,
+      name, email, phone, date, startTime, endTime,
+      startDateTime, endDateTime, people,
       cart: JSON.stringify(cart),
       totals: JSON.stringify({
-        finalTotal,
-        finalReservationPrice,
-        finalProductsTotal,
-        discountValue: actualDiscountValue,
-        productDiscountValue,
-        upfrontFee: UPFRONT_FEE,
-        remainingTotal
+        finalTotal, finalReservationPrice, finalProductsTotal,
+        discountValue: actualDiscountValue, productDiscountValue,
+        upfrontFee: UPFRONT_FEE, remainingTotal
       })
     }, { method: "post" });
   };
 
+  const inputClass = "w-full bg-[#1a261e] border border-white/10 rounded-xl px-4 py-3 text-white text-sm placeholder-white/25 focus:outline-none focus:border-[#ffcc29]/60 focus:ring-1 focus:ring-[#ffcc29]/30 transition-all";
+  const labelClass = "block text-xs font-semibold text-white/40 uppercase tracking-wider mb-2";
+
   return (
     <div className="min-h-screen bg-[#1a261e] text-white font-sans selection:bg-[#006b3e]/50 pb-24">
-      {/* Header Simplificado */}
-      <header className="py-4 px-6 border-b border-white/10 bg-[#006b3e]/90 backdrop-blur-xl sticky top-0 z-50">
+
+      {/* Ambient blobs */}
+      <div className="pointer-events-none fixed inset-0 -z-0 overflow-hidden">
+        <div className="absolute -top-40 right-0 w-[500px] h-[500px] bg-[#006b3e]/15 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#006b3e]/10 rounded-full blur-[100px]" />
+      </div>
+
+      {/* Header */}
+      <header className="py-3 px-6 border-b border-white/8 bg-[#006b3e]/75 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button onClick={() => navigate(-1)} className="p-2 bg-black/20 hover:bg-black/40 rounded-full transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate(-1)}
+              className="p-2 rounded-xl bg-black/20 hover:bg-black/35 transition-colors text-white/80 hover:text-white"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
             </button>
-            <img src="/logo.svg" alt="Logo" className="h-10 w-auto drop-shadow-md" />
+            <img src="/logo.svg" alt="Logo" className="h-9 w-auto drop-shadow-md" />
           </div>
-          <span className="text-[#ffcc29] font-bold text-lg hidden sm:block">Finalizar Reserva</span>
+          <span className="text-[#ffcc29] font-semibold text-sm hidden sm:block tracking-wide">{area.name}</span>
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+      <main className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Formulário */}
+          <div className="lg:col-span-7 space-y-5">
 
-          {/* Lado Esquerdo: Formulário */}
-          <div className="lg:col-span-7 space-y-8">
-            <div className="bg-[#283e31] p-6 sm:p-8 rounded-[2rem] border border-white/10 shadow-lg">
-              <h2 className="text-3xl font-bold mb-8 text-[#ffcc29]">Dados da Reserva</h2>
+            {/* Dados pessoais */}
+            <div className="bg-[#283e31]/70 backdrop-blur-sm p-6 sm:p-8 rounded-3xl border border-white/8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 rounded-xl bg-[#ffcc29]/10 border border-[#ffcc29]/20 flex items-center justify-center shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffcc29" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <h2 className="text-base font-bold text-white">Dados Pessoais</h2>
+              </div>
 
-              <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
-
-                {/* Nome */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-white/70">Nome Completo</label>
-                  <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="João Silva"
-                    className="w-full bg-[#1a261e] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#ffcc29] focus:ring-1 focus:ring-[#ffcc29] transition-all"
-                  />
+              <div className="space-y-4">
+                <div>
+                  <label className={labelClass}>Nome completo</label>
+                  <input type="text" required value={name} onChange={(e) => setName(e.target.value)} placeholder="João Silva" className={inputClass} />
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {/* Melhor E-mail */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-white/70">Melhor E-mail</label>
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="joao@email.com"
-                      className="w-full bg-[#1a261e] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#ffcc29] focus:ring-1 focus:ring-[#ffcc29] transition-all"
-                    />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}>E-mail</label>
+                    <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="joao@email.com" className={inputClass} />
                   </div>
-
-                  {/* Telefone */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-white/70">WhatsApp / Contato</label>
-                    <input
-                      type="tel"
-                      required
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      placeholder="(00) 00000-0000"
-                      className="w-full bg-[#1a261e] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#ffcc29] focus:ring-1 focus:ring-[#ffcc29] transition-all"
-                    />
+                  <div>
+                    <label className={labelClass}>WhatsApp</label>
+                    <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="(00) 00000-0000" className={inputClass} />
                   </div>
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {/* Data */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-white/70">Data (A partir de amanhã)</label>
-                    <input
-                      type="date"
-                      required
-                      min={minDateString}
-                      value={date}
-                      onChange={(e) => setDate(e.target.value)}
-                      className="w-full bg-[#1a261e] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#ffcc29] focus:ring-1 focus:ring-[#ffcc29] transition-all [color-scheme:dark]"
-                    />
-                  </div>
-
-                  {/* Quantidade de Pessoas */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-white/70">Pessoas (Mín: {area.minPeople} - Máx: {area.maxPeople})</label>
-                    <input
-                      type="number"
-                      required
-                      min={area.minPeople}
-                      max={area.maxPeople}
-                      value={people}
-                      onChange={(e) => setPeople(e.target.value)}
-                      placeholder="Ex: 4"
-                      className="w-full bg-[#1a261e] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#ffcc29] focus:ring-1 focus:ring-[#ffcc29] transition-all"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {/* Horário Início */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-white/70">Início (A partir de {area.openTime})</label>
-                    <input
-                      type="time"
-                      required
-                      min={area.openTime}
-                      max={area.closeTime}
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
-                      className="w-full bg-[#1a261e] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#ffcc29] focus:ring-1 focus:ring-[#ffcc29] transition-all [color-scheme:dark]"
-                    />
-                  </div>
-
-                  {/* Horário Término */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-white/70">Término (Até {area.closeTime})</label>
-                    <input
-                      type="time"
-                      required
-                      min={startTime || area.openTime}
-                      max={area.closeTime}
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
-                      className="w-full bg-[#1a261e] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#ffcc29] focus:ring-1 focus:ring-[#ffcc29] transition-all [color-scheme:dark]"
-                    />
-                  </div>
-                </div>
-
-              </form>
+              </div>
             </div>
 
-            {/* Produtos / Combos para Desconto */}
-            {area.hasDiscountProducts && (
-              <div className="bg-[#283e31] p-6 sm:p-8 rounded-[2rem] border border-white/10 shadow-lg">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+            {/* Data e horário */}
+            <div className="bg-[#283e31]/70 backdrop-blur-sm p-6 sm:p-8 rounded-3xl border border-white/8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 rounded-xl bg-[#ffcc29]/10 border border-[#ffcc29]/20 flex items-center justify-center shrink-0">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffcc29" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                </div>
+                <h2 className="text-base font-bold text-white">Data e Horário</h2>
+              </div>
+
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <h2 className="text-2xl font-bold text-[#ffcc29] flex items-center gap-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" /><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" /><path d="M2 7h20" /><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" /></svg>
-                      Pré-venda de Consumo
-                    </h2>
-                    <p className="text-white/70 text-sm mt-1">Acrescente produtos e ganhe até 100% de isenção no valor da reserva!</p>
+                    <label className={labelClass}>Data (a partir de amanhã)</label>
+                    <input type="date" required min={minDateString} value={date} onChange={(e) => setDate(e.target.value)} className={`${inputClass} [color-scheme:dark]`} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Pessoas (mín. {area.minPeople} · máx. {area.maxPeople})</label>
+                    <input type="number" required min={area.minPeople} max={area.maxPeople} value={people} onChange={(e) => setPeople(e.target.value)} placeholder="Ex: 4" className={inputClass} />
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}>Início (a partir de {area.openTime})</label>
+                    <input type="time" required min={area.openTime} max={area.closeTime} value={startTime} onChange={(e) => setStartTime(e.target.value)} className={`${inputClass} [color-scheme:dark]`} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Término (até {area.closeTime})</label>
+                    <input type="time" required min={startTime || area.openTime} max={area.closeTime} value={endTime} onChange={(e) => setEndTime(e.target.value)} className={`${inputClass} [color-scheme:dark]`} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Pré-venda */}
+            {area.hasDiscountProducts && (
+              <div className="bg-[#283e31]/70 backdrop-blur-sm p-6 sm:p-8 rounded-3xl border border-white/8">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="w-8 h-8 rounded-xl bg-[#ffcc29]/10 border border-[#ffcc29]/20 flex items-center justify-center shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffcc29" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" /><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" /><path d="M2 7h20" /><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" /></svg>
+                  </div>
+                  <h2 className="text-base font-bold text-white">Pré-venda de Consumo</h2>
+                </div>
+                <p className="text-white/40 text-xs ml-11 mb-6">Adicione produtos e abata até 100% da taxa de reserva.</p>
+
+                <div className="space-y-3">
                   {(area.products || []).map((product: any) => {
                     const qty = cart[product.id] || 0;
                     return (
-                      <div key={product.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-[#1a261e] border border-white/5 rounded-2xl gap-4">
-                        <div className="flex-1">
-                          <h4 className="font-bold text-white">{product.name}</h4>
-                          <div className="flex items-center gap-3 mt-1">
-                            <span className="text-[#ffcc29] font-medium">{formatCurrency(product.price)}</span>
-                            <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                              Abate {product.discountPercent}% do valor na reserva
+                      <div
+                        key={product.id}
+                        className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${qty > 0 ? 'bg-[#ffcc29]/5 border-[#ffcc29]/20' : 'bg-[#1a261e]/60 border-white/5'}`}
+                      >
+                        <div className="flex-1 min-w-0 mr-4">
+                          <p className="font-semibold text-white text-sm truncate">{product.name}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[#ffcc29] text-sm font-medium">{formatCurrency(product.price)}</span>
+                            <span className="text-xs text-emerald-400/80 bg-emerald-400/8 border border-emerald-400/15 px-2 py-0.5 rounded-full">
+                              -{product.discountPercent}% na reserva
                             </span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4 bg-[#283e31] p-1.5 rounded-xl border border-white/10 shrink-0">
-                          <button onClick={() => updateCart(product.id, -1)} disabled={qty === 0} className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors ${qty > 0 ? 'bg-white/10 hover:bg-white/20 text-white' : 'opacity-50 text-white/30'}`}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /></svg>
+
+                        <div className="flex items-center gap-2 bg-[#283e31] p-1 rounded-xl border border-white/8 shrink-0">
+                          <button
+                            onClick={() => updateCart(product.id, -1)}
+                            disabled={qty === 0}
+                            className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors ${qty > 0 ? 'bg-white/8 hover:bg-white/15 text-white' : 'opacity-30 text-white/50'}`}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /></svg>
                           </button>
-                          <span className="w-4 text-center font-bold">{qty}</span>
-                          <button onClick={() => updateCart(product.id, 1)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+                          <span className="w-5 text-center text-sm font-bold tabular-nums">{qty}</span>
+                          <button
+                            onClick={() => updateCart(product.id, 1)}
+                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/8 hover:bg-white/15 text-white transition-colors"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
                           </button>
                         </div>
                       </div>
@@ -435,111 +386,70 @@ export default function Reservation() {
             )}
           </div>
 
-          {/* Lado Direito: Resumo */}
+          {/* Resumo */}
           <div className="lg:col-span-5">
-            <div className="bg-[#283e31] border border-white/10 rounded-[2rem] overflow-hidden sticky top-28 shadow-2xl">
+            <div className="bg-[#283e31]/70 backdrop-blur-sm border border-white/8 rounded-3xl overflow-hidden sticky top-24">
 
-              <div className="h-48 w-full relative">
+              {/* Imagem da área */}
+              <div className="h-44 w-full relative">
                 <img src={area.image} alt={area.name} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#283e31] to-transparent" />
-                <div className="absolute bottom-4 left-6">
-                  <h3 className="text-3xl font-extrabold text-white drop-shadow-lg">{area.name}</h3>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#283e31] via-[#283e31]/40 to-transparent" />
+                <div className="absolute bottom-4 left-5">
+                  <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">Reservando</span>
+                  <h3 className="text-2xl font-extrabold text-white leading-tight">{area.name}</h3>
                 </div>
               </div>
 
-              <div className="p-6 sm:p-8 space-y-6">
-                <div className="text-sm text-white/70 bg-white/5 p-4 rounded-2xl border border-white/5 leading-relaxed">
-                  <strong>Observações:</strong> {area.observations}
-                </div>
+              <div className="p-6 space-y-5">
 
-                <div className="space-y-4">
-                  <h4 className="font-bold text-[#ffcc29] uppercase tracking-wider text-sm">Resumo dos Valores</h4>
+                {/* Observações */}
+                <p className="text-white/45 text-xs leading-relaxed bg-white/4 border border-white/6 rounded-2xl p-4">
+                  {area.observations}
+                </p>
 
-                  <div className="flex justify-between items-start text-white/90">
-                    <span>Taxa de Reserva</span>
-                    <div className="text-right">
-                      <div>{formatCurrency(area.basePrice)}</div>
+                {/* Valores */}
+                <div>
+                  <p className="text-xs font-bold text-white/30 uppercase tracking-widest mb-4">Resumo</p>
+
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-white/60">Taxa de reserva</span>
+                      <span className="font-semibold text-white">{formatCurrency(area.basePrice)}</span>
                     </div>
-                  </div>
 
-                  {area.hasDiscountProducts && (
-                    <>
-                      <div className="flex justify-between items-center text-white/90">
-                        <span>Produtos (Pré-venda)</span>
-                        <span>{formatCurrency(productsTotal)}</span>
-                      </div>
+                    {area.hasDiscountProducts && (
+                      <>
+                        <div className="flex justify-between items-center text-sm">
+                          <span className="text-white/60">Produtos (pré-venda)</span>
+                          <span className="font-semibold text-white">{formatCurrency(productsTotal)}</span>
+                        </div>
 
-                      {actualDiscountValue > 0 && (
-                        <>
-                          <div className="flex justify-between items-center text-emerald-400 font-medium bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20">
-                            <span className="flex items-center gap-2">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" /><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" /><path d="M2 7h20" /><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" /></svg>
-                              Consumação Abatida
-                            </span>
-                            <span>- {formatCurrency(actualDiscountValue)}</span>
-                          </div>
-
-                          <div className="flex justify-between items-start text-white/70 text-sm border-t border-white/5 pt-3 mt-3">
-                            <span>Restante da Reserva</span>
-                            <div className="text-right">
-                              <div className={finalReservationPrice === 0 ? "text-emerald-400 font-bold" : "text-white"}>
-                                {formatCurrency(finalReservationPrice)}
-                              </div>
-                              {peopleCount > 1 && finalReservationPrice > 0 && (
-                                <div className="text-xs text-white/50 mt-0.5">{formatCurrency(remainingReservationPerPerson)} / pessoa</div>
-                              )}
-                            </div>
-                          </div>
-
-                          {productDiscountValue > 0 && (
-                            <div className="flex justify-between items-center text-emerald-400 font-medium bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 mt-3">
-                              <span className="flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" /><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" /><path d="M2 7h20" /><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" /></svg>
-                                Desconto nos Produtos
+                        {actualDiscountValue > 0 && (
+                          <>
+                            <div className="flex justify-between items-center text-sm bg-emerald-500/8 border border-emerald-500/15 rounded-xl px-3 py-2.5">
+                              <span className="text-emerald-400 flex items-center gap-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                                Desconto consumação
                               </span>
-                              <span>- {formatCurrency(productDiscountValue)}</span>
+                              <span className="text-emerald-400 font-semibold">− {formatCurrency(actualDiscountValue)}</span>
                             </div>
-                          )}
-                        </>
-                      )}
-                    </>
-                  )}
 
-                  <div className="pt-4 border-t border-white/10">
-                    {UPFRONT_FEE > 0 ? (
-                      <>
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-xl font-bold text-white">Sinal (Pagar Agora)</span>
-                          <span className="text-3xl font-extrabold text-[#ffcc29]">{formatCurrency(UPFRONT_FEE)}</span>
-                        </div>
-
-                        <div className="mt-4 pt-4 border-t border-white/5 space-y-2">
-                          <div className="flex justify-between items-center text-white/70 text-sm">
-                            <span>Total Estimado (Reserva + Produtos)</span>
-                            <span>{formatCurrency(finalTotal)}</span>
-                          </div>
-                          <div className="flex justify-between items-center text-emerald-400 font-bold text-sm">
-                            <span>Restante a Pagar no Local</span>
-                            <span>{formatCurrency(remainingTotal)}</span>
-                          </div>
-                          {peopleCount > 1 && (
-                            <div className="flex justify-between items-center text-emerald-400/50 text-xs">
-                              <span>Rateio no Local ({peopleCount} pessoas)</span>
-                              <span>{formatCurrency(remainingPerPerson)} / pessoa</span>
+                            <div className="flex justify-between items-center text-sm">
+                              <span className="text-white/50">Reserva restante</span>
+                              <span className={`font-semibold ${finalReservationPrice === 0 ? "text-emerald-400" : "text-white"}`}>
+                                {formatCurrency(finalReservationPrice)}
+                              </span>
                             </div>
-                          )}
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-xl font-bold text-white">Total da Reserva</span>
-                          <span className="text-3xl font-extrabold text-[#ffcc29]">{formatCurrency(finalTotal)}</span>
-                        </div>
-                        {peopleCount > 1 && finalTotal > 0 && (
-                          <div className="mt-2 flex justify-between items-center text-emerald-400/50 text-xs">
-                            <span>Rateio no Local ({peopleCount} pessoas)</span>
-                            <span>{formatCurrency(finalTotal / peopleCount)} / pessoa</span>
+                          </>
+                        )}
+
+                        {productDiscountValue > 0 && (
+                          <div className="flex justify-between items-center text-sm bg-emerald-500/8 border border-emerald-500/15 rounded-xl px-3 py-2.5">
+                            <span className="text-emerald-400 flex items-center gap-1.5">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                              Desconto nos produtos
+                            </span>
+                            <span className="text-emerald-400 font-semibold">− {formatCurrency(productDiscountValue)}</span>
                           </div>
                         )}
                       </>
@@ -547,39 +457,85 @@ export default function Reservation() {
                   </div>
                 </div>
 
+                {/* Divider */}
+                <div className="border-t border-white/8" />
+
+                {/* Total */}
+                {UPFRONT_FEE > 0 ? (
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="text-white font-bold text-sm">Sinal agora</p>
+                        <p className="text-white/40 text-xs mt-0.5">Confirma a reserva</p>
+                      </div>
+                      <span className="text-3xl font-extrabold text-[#ffcc29]">{formatCurrency(UPFRONT_FEE)}</span>
+                    </div>
+
+                    <div className="bg-white/4 border border-white/6 rounded-2xl p-4 space-y-2">
+                      <div className="flex justify-between text-xs text-white/50">
+                        <span>Total estimado</span>
+                        <span>{formatCurrency(finalTotal)}</span>
+                      </div>
+                      <div className="flex justify-between text-xs text-emerald-400 font-semibold">
+                        <span>Pagar no local</span>
+                        <span>{formatCurrency(remainingTotal)}</span>
+                      </div>
+                      {peopleCount > 1 && (
+                        <div className="flex justify-between text-xs text-white/30 pt-1 border-t border-white/6">
+                          <span>Rateio ({peopleCount} pessoas)</span>
+                          <span>{formatCurrency(remainingPerPerson)} / pessoa</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="text-white font-bold text-sm">Total da reserva</p>
+                      {peopleCount > 1 && finalTotal > 0 && (
+                        <p className="text-white/40 text-xs mt-0.5">{formatCurrency(finalTotal / peopleCount)} / pessoa</p>
+                      )}
+                    </div>
+                    <span className="text-3xl font-extrabold text-[#ffcc29]">{formatCurrency(finalTotal)}</span>
+                  </div>
+                )}
+
+                {/* CTA */}
                 <button
                   onClick={handleConfirmAndPay}
                   disabled={isSubmitting}
-                  className={`w-full py-4 mt-4 rounded-2xl ${isSubmitting ? 'bg-[#ffcc29]/50 cursor-not-allowed' : 'bg-[#ffcc29] hover:bg-[#f8bd2f] hover:shadow-[0_0_20px_rgba(255,204,41,0.4)]'} text-[#1a261e] text-lg font-bold transition-all active:scale-[0.98] flex items-center justify-center gap-2`}
+                  className={`w-full py-4 rounded-2xl text-[#1a261e] text-sm font-bold transition-all active:scale-[0.98] flex items-center justify-center gap-2 ${isSubmitting ? 'bg-[#ffcc29]/50 cursor-not-allowed' : 'bg-[#ffcc29] hover:bg-[#f5c420] hover:shadow-[0_0_24px_rgba(255,204,41,0.35)]'}`}
                 >
-                  {isSubmitting ? "Processando..." : (UPFRONT_FEE > 0 ? "Confirmar e Pagar" : "Confirmar Reserva")}
-                  {!isSubmitting && <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>}
+                  {isSubmitting ? (
+                    <>
+                      <svg className="animate-spin" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                      Processando...
+                    </>
+                  ) : (
+                    <>
+                      {UPFRONT_FEE > 0 ? "Confirmar e Pagar" : "Confirmar Reserva"}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+                    </>
+                  )}
                 </button>
 
+                {/* Notas */}
                 {UPFRONT_FEE > 0 && (
-                  <p className="text-xs text-center text-white/70 mt-4 leading-relaxed px-2 bg-black/20 p-3 rounded-xl border border-white/5">
-                    <strong>Atenção:</strong> Será cobrada uma taxa de confirmação de <strong>{formatCurrency(UPFRONT_FEE)}</strong> agora. Em caso de cancelamento, este valor não é reembolsável (fica retido pelo estabelecimento). O restante da consumação e reserva será pago no dia do evento.
+                  <p className="text-xs text-center text-white/35 leading-relaxed">
+                    O sinal de {formatCurrency(UPFRONT_FEE)} não é reembolsável em caso de cancelamento.
                   </p>
                 )}
 
                 {area.hasDiscountProducts && !area.applyExcessToProducts && (
-                  <>
-                    <p className="text-xs text-center text-white/50 mt-4 leading-relaxed px-2">
-                      * Os produtos não consumidos no dia do evento serão devolvidos em forma de crédito para uso futuro.
-                    </p>
-
-                  </>
+                  <p className="text-xs text-center text-white/30 leading-relaxed">
+                    Produtos não consumidos serão revertidos em crédito para uso futuro.
+                  </p>
                 )}
 
                 {area.hasDiscountProducts && area.applyExcessToProducts && (
-                  <>
-                    <p className="text-xs text-center text-white/50 mt-4 leading-relaxed px-2">
-                      * Os produtos adquiridos na pré-venda que não forem consumidos no dia do evento retornarão como crédito no seu cadastro (com base no valor já com desconto aplicado).
-                    </p>
-                    <p className="text-xs text-center text-white/50 mt-4 leading-relaxed px-2">
-                      * O valor excedente dos produtos será cobrado no dia do evento (com base no valor já com desconto aplicado).
-                    </p>
-                  </>
+                  <p className="text-xs text-center text-white/30 leading-relaxed">
+                    Produtos não consumidos retornam como crédito no seu cadastro.
+                  </p>
                 )}
 
               </div>
