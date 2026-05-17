@@ -45,7 +45,8 @@ export async function action({ request }: Route.ActionArgs) {
       return { error: "Falha ao processar reserva no servidor." };
     }
 
-    return { success: true };
+    const token = crypto.randomUUID();
+    return { success: true, token };
   } catch (err) {
     console.error("Webhook error:", err);
     return { error: "Erro interno ao processar reserva." };
@@ -160,9 +161,20 @@ export default function Reservation() {
   }, [id, searchParams]);
 
   useEffect(() => {
-    if (actionData?.success) {
-      alert("Reserva confirmada com sucesso!");
-      navigate("/");
+    if (actionData?.success && actionData.token) {
+      const reservationData = {
+        token: actionData.token,
+        areaId: area?.id,
+        areaName: area?.name,
+        areaImage: area?.image,
+        name, email, phone, date, startTime, endTime, people,
+        cart,
+        totals: { finalTotal, finalReservationPrice, finalProductsTotal, discountValue: actualDiscountValue, productDiscountValue, upfrontFee: UPFRONT_FEE, remainingTotal },
+        status: "confirmed",
+        createdAt: new Date().toISOString(),
+      };
+      sessionStorage.setItem(`reserva_${actionData.token}`, JSON.stringify(reservationData));
+      navigate(`/minha-reserva/${actionData.token}`);
     } else if (actionData?.error) {
       alert(actionData.error);
     }
