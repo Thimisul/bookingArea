@@ -74,8 +74,8 @@ const mockAreas = [
       { id: "p5",  name: "Chandon + 4 Energéticos",          price: 450, discountPercent: 100, category: "Destilados",      obs: "1 garrafa Chandon Brut 750ml + 4 energéticos à escolha.",                                    showObs: true  },
       { id: "p6",  name: "Pack de Sucos (6 un)",             price:  60, discountPercent: 100, category: "Sem Álcool",      obs: "Sabores variados: laranja, uva, maracujá e manga.",                                          showObs: true  },
       { id: "p7",  name: "Água + Refrigerante Pack (12 un)", price:  80, discountPercent: 100, category: "Sem Álcool",      obs: "6 águas 500ml + 6 refrigerantes lata (Coca, Guaraná, Sprite).",                              showObs: true  },
-      { id: "p8",  name: "Picanha 1kg",                      price: 160, discountPercent: 100, category: "Combo de Carnes", obs: "Picanha temperada, pronta para grelhar.",                                                    showObs: true  },
-      { id: "p9",  name: "Frango Temperado 1kg",             price:  90, discountPercent: 100, category: "Combo de Carnes", obs: "Coxa e sobrecoxa marinadas com tempero da casa.",                                            showObs: true  },
+      { id: "p8",  name: "Picanha 1kg",                      price: 160, discountPercent: 100, category: "Carnes", obs: "Picanha temperada, pronta para grelhar.",                                                    showObs: true  },
+      { id: "p9",  name: "Frango Temperado 1kg",             price:  90, discountPercent: 100, category: "Carnes", obs: "Coxa e sobrecoxa marinadas com tempero da casa.",                                            showObs: true  },
       { id: "p10", name: "Churrasqueiro",                    price: 200, discountPercent: 100, category: "Serviços",        obs: "Profissional exclusivo para o preparo e corte das carnes durante o evento.",                  showObs: true  },
       { id: "p11", name: "Atendente Particular",             price: 150, discountPercent: 100, category: "Serviços",        obs: "Garçom dedicado à sua área durante todo o evento.",                                          showObs: true  },
     ]
@@ -102,9 +102,9 @@ const mockAreas = [
       { id: "p7",  name: "Gin Beefeater 1L",            price: 190, discountPercent: 30, category: "Destilados",      obs: "Garrafa 1L + 4 tônicas, limão e gelo.",                                             showObs: true  },
       { id: "p8",  name: "Pack Refrigerante (12 un)",   price:  96, discountPercent: 30, category: "Sem Álcool",      obs: "Latas variadas: Coca-Cola, Guaraná Antarctica e Sprite.",                           showObs: true  },
       { id: "p9",  name: "Pack de Água (12 un)",        price:  60, discountPercent: 30, category: "Sem Álcool",      obs: "Garrafas 500ml, geladas.",                                                          showObs: true  },
-      { id: "p10", name: "Combo Churrasco Completo",    price: 380, discountPercent: 30, category: "Combo de Carnes", obs: "Picanha 1kg + costela 1kg + linguiça 500g + frango 1kg, tudo temperado.",           showObs: true  },
-      { id: "p11", name: "Picanha 2kg",                 price: 320, discountPercent: 30, category: "Combo de Carnes", obs: "Picanha temperada, pronta para grelhar.",                                            showObs: true  },
-      { id: "p12", name: "Frango Temperado 2kg",        price: 160, discountPercent: 30, category: "Combo de Carnes", obs: "Coxa e sobrecoxa marinadas com tempero da casa.",                                   showObs: true  },
+      { id: "p10", name: "Combo Churrasco Completo",    price: 380, discountPercent: 30, category: "Carnes", obs: "Picanha 1kg + costela 1kg + linguiça 500g + frango 1kg, tudo temperado.",           showObs: true  },
+      { id: "p11", name: "Picanha 2kg",                 price: 320, discountPercent: 30, category: "Carnes", obs: "Picanha temperada, pronta para grelhar.",                                            showObs: true  },
+      { id: "p12", name: "Frango Temperado 2kg",        price: 160, discountPercent: 30, category: "Carnes", obs: "Coxa e sobrecoxa marinadas com tempero da casa.",                                   showObs: true  },
       { id: "p13", name: "Churrasqueiro",               price: 200, discountPercent: 30, category: "Serviços",        obs: "Profissional exclusivo para o preparo e corte das carnes durante o evento.",        showObs: true  },
       { id: "p14", name: "Atendente Particular",        price: 150, discountPercent: 30, category: "Serviços",        obs: "Garçom dedicado à sua área durante todo o evento.",                                 showObs: true  },
     ]
