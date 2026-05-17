@@ -377,7 +377,7 @@ export default function Reservation() {
                   </div>
 
                   {/* Abas de categoria */}
-                  <div className="px-6 sm:px-8 pb-4 flex gap-2 overflow-x-auto scrollbar-none">
+                  <div className="px-6 sm:px-8 pb-4 flex gap-2 overflow-x-auto scrollbar-none justify-center">
                     {categories.map(cat => {
                       const count = cartCountByCategory(cat);
                       const isActive = cat === activeCategory;
