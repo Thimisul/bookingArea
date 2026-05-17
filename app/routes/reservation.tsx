@@ -67,10 +67,15 @@ const mockAreas = [
     observations: "Acesso exclusivo à área VIP com atendimento dedicado. Proibida entrada de menores de 18 anos.",
     image: "/lounge_area.png",
     products: [
-      { id: "p1", name: "Combo Absolut + RedBull", price: 350, discountPercent: 100 },
-      { id: "p2", name: "Combo Gin Beefeater + Tônica", price: 400, discountPercent: 100 },
-      { id: "p3", name: "Balde de Heineken (10 un)", price: 120, discountPercent: 100 },
-      { id: "p4", name: "Chandon + 4 Energéticos", price: 450, discountPercent: 100 },
+      { id: "p1", name: "Balde de Heineken (10 un)", price: 120, discountPercent: 100, category: "Cervejas" },
+      { id: "p2", name: "Balde de Budweiser (10 un)", price: 130, discountPercent: 100, category: "Cervejas" },
+      { id: "p3", name: "Combo Absolut + RedBull", price: 350, discountPercent: 100, category: "Destilados" },
+      { id: "p4", name: "Combo Gin Beefeater + Tônica", price: 400, discountPercent: 100, category: "Destilados" },
+      { id: "p5", name: "Chandon + 4 Energéticos", price: 450, discountPercent: 100, category: "Destilados" },
+      { id: "p6", name: "Pack de Sucos (6 un)", price: 60, discountPercent: 100, category: "Sem Álcool" },
+      { id: "p7", name: "Água + Refrigerante Pack (12 un)", price: 80, discountPercent: 100, category: "Sem Álcool" },
+      { id: "p8", name: "Picanha 1kg", price: 160, discountPercent: 100, category: "Combo de Carnes" },
+      { id: "p9", name: "Frango Temperado 1kg", price: 90, discountPercent: 100, category: "Combo de Carnes" },
     ]
   },
   {
@@ -86,9 +91,18 @@ const mockAreas = [
     observations: "Espaço isolado perfeito para comemorações particulares. Som independente.",
     image: "/private_room.png",
     products: [
-      { id: "p1", name: "24 HEINEKEN 600ml ", price: 408, discountPercent: 30 },
-      { id: "p2", name: "12 ANTARTICA LITÃO ", price: 192, discountPercent: 35 },
-      { id: "p3", name: "24 ANTARTICA 600ml ", price: 312, discountPercent: 30 },
+      { id: "p1", name: "24 Heineken 600ml", price: 408, discountPercent: 30, category: "Cervejas" },
+      { id: "p2", name: "24 Amstel 600ml", price: 360, discountPercent: 30, category: "Cervejas" },
+      { id: "p3", name: "12 Antarctica Litão", price: 192, discountPercent: 35, category: "Cervejas" },
+      { id: "p4", name: "24 Antarctica 600ml", price: 312, discountPercent: 30, category: "Cervejas" },
+      { id: "p5", name: "Whisky Jack Daniel's 1L", price: 220, discountPercent: 30, category: "Destilados" },
+      { id: "p6", name: "Vodka Absolut 1L", price: 180, discountPercent: 30, category: "Destilados" },
+      { id: "p7", name: "Gin Beefeater 1L", price: 190, discountPercent: 30, category: "Destilados" },
+      { id: "p8", name: "Pack Refrigerante (12 un)", price: 96, discountPercent: 30, category: "Sem Álcool" },
+      { id: "p9", name: "Pack de Água (12 un)", price: 60, discountPercent: 30, category: "Sem Álcool" },
+      { id: "p10", name: "Combo Churrasco Completo", price: 380, discountPercent: 30, category: "Combo de Carnes" },
+      { id: "p11", name: "Picanha 2kg", price: 320, discountPercent: 30, category: "Combo de Carnes" },
+      { id: "p12", name: "Frango Temperado 2kg", price: 160, discountPercent: 30, category: "Combo de Carnes" },
     ]
   },
   {
@@ -118,6 +132,7 @@ export default function Reservation() {
 
   const [area, setArea] = useState<typeof mockAreas[0] | null>(null);
   const [cart, setCart] = useState<{ [key: string]: number }>({});
+  const [activeCategory, setActiveCategory] = useState<string>("");
 
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -133,6 +148,10 @@ export default function Reservation() {
       setArea(foundArea);
       const peopleParam = searchParams.get("people");
       if (peopleParam) setPeople(peopleParam);
+      if (foundArea.products.length > 0) {
+        const firstCategory = (foundArea.products[0] as any).category as string;
+        setActiveCategory(firstCategory);
+      }
     }
   }, [id, searchParams]);
 
@@ -334,56 +353,93 @@ export default function Reservation() {
             </div>
 
             {/* Pré-venda */}
-            {area.hasDiscountProducts && (
-              <div className="bg-[#283e31]/70 backdrop-blur-sm p-6 sm:p-8 rounded-3xl border border-white/8">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 rounded-xl bg-[#ffcc29]/10 border border-[#ffcc29]/20 flex items-center justify-center shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffcc29" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" /><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" /><path d="M2 7h20" /><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" /></svg>
-                  </div>
-                  <h2 className="text-base font-bold text-white">Pré-venda de Consumo</h2>
-                </div>
-                <p className="text-white/40 text-xs ml-11 mb-6">Adicione produtos e abata até 100% da taxa de reserva.</p>
+            {area.hasDiscountProducts && (() => {
+              const categories = [...new Set((area.products as any[]).map(p => p.category))] as string[];
+              const filtered = (area.products as any[]).filter(p => p.category === activeCategory);
+              const cartCountByCategory = (cat: string) =>
+                (area.products as any[]).filter(p => p.category === cat).reduce((sum, p) => sum + (cart[p.id] || 0), 0);
 
-                <div className="space-y-3">
-                  {(area.products || []).map((product: any) => {
-                    const qty = cart[product.id] || 0;
-                    return (
-                      <div
-                        key={product.id}
-                        className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${qty > 0 ? 'bg-[#ffcc29]/5 border-[#ffcc29]/20' : 'bg-[#1a261e]/60 border-white/5'}`}
-                      >
-                        <div className="flex-1 min-w-0 mr-4">
-                          <p className="font-semibold text-white text-sm truncate">{product.name}</p>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-[#ffcc29] text-sm font-medium">{formatCurrency(product.price)}</span>
-                            <span className="text-xs text-emerald-400/80 bg-emerald-400/8 border border-emerald-400/15 px-2 py-0.5 rounded-full">
-                              -{product.discountPercent}% na reserva
+              return (
+                <div className="bg-[#283e31]/70 backdrop-blur-sm rounded-3xl border border-white/8 overflow-hidden">
+                  {/* Header */}
+                  <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-4">
+                    <div className="flex items-center gap-3 mb-1">
+                      <div className="w-8 h-8 rounded-xl bg-[#ffcc29]/10 border border-[#ffcc29]/20 flex items-center justify-center shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ffcc29" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" /><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" /><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" /><path d="M2 7h20" /><path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" /></svg>
+                      </div>
+                      <h2 className="text-base font-bold text-white">Pré-venda de Consumo</h2>
+                    </div>
+                    <p className="text-white/40 text-xs ml-11">Adicione produtos e abata até 100% da taxa de reserva.</p>
+                  </div>
+
+                  {/* Abas de categoria */}
+                  <div className="px-6 sm:px-8 pb-4 flex gap-2 overflow-x-auto scrollbar-none">
+                    {categories.map(cat => {
+                      const count = cartCountByCategory(cat);
+                      const isActive = cat === activeCategory;
+                      return (
+                        <button
+                          key={cat}
+                          onClick={() => setActiveCategory(cat)}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all shrink-0 ${
+                            isActive
+                              ? "bg-[#ffcc29] text-[#1a261e]"
+                              : "bg-white/6 border border-white/10 text-white/60 hover:text-white hover:bg-white/10"
+                          }`}
+                        >
+                          {cat}
+                          {count > 0 && (
+                            <span className={`w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center ${isActive ? "bg-[#1a261e]/20 text-[#1a261e]" : "bg-[#ffcc29] text-[#1a261e]"}`}>
+                              {count}
                             </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Produtos da categoria ativa */}
+                  <div className="px-6 sm:px-8 pb-6 sm:pb-8 space-y-3">
+                    {filtered.map((product: any) => {
+                      const qty = cart[product.id] || 0;
+                      return (
+                        <div
+                          key={product.id}
+                          className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${qty > 0 ? 'bg-[#ffcc29]/5 border-[#ffcc29]/20' : 'bg-[#1a261e]/60 border-white/5'}`}
+                        >
+                          <div className="flex-1 min-w-0 mr-4">
+                            <p className="font-semibold text-white text-sm">{product.name}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-[#ffcc29] text-sm font-medium">{formatCurrency(product.price)}</span>
+                              <span className="text-xs text-emerald-400/80 bg-emerald-400/8 border border-emerald-400/15 px-2 py-0.5 rounded-full">
+                                -{product.discountPercent}% na reserva
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 bg-[#283e31] p-1 rounded-xl border border-white/8 shrink-0">
+                            <button
+                              onClick={() => updateCart(product.id, -1)}
+                              disabled={qty === 0}
+                              className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors ${qty > 0 ? 'bg-white/8 hover:bg-white/15 text-white' : 'opacity-30 text-white/50'}`}
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /></svg>
+                            </button>
+                            <span className="w-5 text-center text-sm font-bold tabular-nums">{qty}</span>
+                            <button
+                              onClick={() => updateCart(product.id, 1)}
+                              className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/8 hover:bg-white/15 text-white transition-colors"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+                            </button>
                           </div>
                         </div>
-
-                        <div className="flex items-center gap-2 bg-[#283e31] p-1 rounded-xl border border-white/8 shrink-0">
-                          <button
-                            onClick={() => updateCart(product.id, -1)}
-                            disabled={qty === 0}
-                            className={`w-8 h-8 flex items-center justify-center rounded-lg transition-colors ${qty > 0 ? 'bg-white/8 hover:bg-white/15 text-white' : 'opacity-30 text-white/50'}`}
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /></svg>
-                          </button>
-                          <span className="w-5 text-center text-sm font-bold tabular-nums">{qty}</span>
-                          <button
-                            onClick={() => updateCart(product.id, 1)}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/8 hover:bg-white/15 text-white transition-colors"
-                          >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
 
           {/* Resumo */}
