@@ -272,7 +272,12 @@ export default function Reservation() {
       areaName: area.name,
       name, email, phone, date, startTime, endTime,
       startDateTime, endDateTime, people,
-      cart: JSON.stringify(cart),
+      cart: JSON.stringify(
+        Object.entries(cart).map(([pId, qty]) => {
+          const prod = area.products.find((p: any) => p.id === pId) as any;
+          return { id: pId, name: prod?.name, obs: prod?.obs, price: prod?.price, qty };
+        })
+      ),
       totals: JSON.stringify({
         finalTotal, finalReservationPrice, finalProductsTotal,
         discountValue: actualDiscountValue, productDiscountValue,
