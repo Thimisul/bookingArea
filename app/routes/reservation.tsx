@@ -12,7 +12,7 @@ export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
 
   const payload = {
-    areaId: formData.get("areaId"),
+    areaId: formData.get("calendarId"),
     areaName: formData.get("areaName"),
     name: formData.get("name"),
     email: formData.get("email"),
@@ -46,7 +46,8 @@ export async function action({ request }: Route.ActionArgs) {
     }
 
     const token = crypto.randomUUID();
-    return { success: true, token };
+    const result = response.json ? await response.json() : null;
+    return { success: true, token, message: result?.message };
   } catch (err) {
     console.error("Webhook error:", err);
     return { error: "Erro interno ao processar reserva." };
@@ -57,6 +58,7 @@ export async function action({ request }: Route.ActionArgs) {
 const mockAreas = [
   {
     id: "1",
+    calendarId: "6a5434a1f376e4c3aade9330128fd8afa3d5d84f6c934fb9acd36c36605794d9@group.calendar.google.com",
     name: "Churrasqueira Bar",
     basePrice: 400,
     minPeople: 1,
@@ -83,6 +85,7 @@ const mockAreas = [
   },
   {
     id: "2",
+    calendarId: "j806ssogtb9oj0oda51fkudo7o@group.calendar.google.com",
     name: "Churrasqueira Garagem",
     basePrice: 400,
     minPeople: 15,
@@ -113,6 +116,7 @@ const mockAreas = [
   {
     id: "3",
     name: "Reserva de Mesa",
+    cakebdarId: "9a317cfa23845f707090896bed13959a525c74fe97c03d77e2d3985ebc99bbfb@group.calendar.google.com",
     basePrice: 0,
     minPeople: 1,
     maxPeople: 12,
@@ -164,7 +168,7 @@ export default function Reservation() {
     if (actionData?.success && actionData.token) {
       const reservationData = {
         token: actionData.token,
-        areaId: area?.id,
+        areaId: area?.calendarId,
         areaName: area?.name,
         areaImage: area?.image,
         name, email, phone, date, startTime, endTime, people,

@@ -11,7 +11,7 @@ export function meta({ }: Route.MetaArgs) {
 
 const areas = [
   {
-    id: 1,
+    id: "1",
     name: "Churrasqueira Bar",
     image: "/lounge_area.png",
     capacity: "Até 15 pessoas",
@@ -20,7 +20,7 @@ const areas = [
     description: "Área íntima com mesa de sinuca e churrasqueira, integrada ao bar. Perfeita para grupos menores."
   },
   {
-    id: 2,
+    id: "2",
     name: "Churrasqueira Garagem",
     image: "/private_room.png",
     capacity: "Até 50 pessoas",
