@@ -145,10 +145,10 @@ export default function MyReservation() {
           <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
             <div>
-              <p className="text-emerald-400 font-semibold text-sm">Reserva confirmada</p>
+              <p className="text-emerald-400 font-semibold text-sm">Reserva solicitada</p>
               <p className="text-emerald-400/60 text-xs">
                 {modifiable
-                  ? "Você pode editar ou cancelar até 1 dia antes do evento."
+                  ? "Entraremos em contato para confirmar e cobrar o sinal."
                   : "Prazo para alterações encerrado — o evento é amanhã ou já passou."}
               </p>
             </div>
