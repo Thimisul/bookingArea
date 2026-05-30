@@ -12,7 +12,8 @@ export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
 
   const payload = {
-    areaId: formData.get("calendarId"),
+    areaId: formData.get("areaId"),
+    calendarId: formData.get("calendarId"),
     areaName: formData.get("areaName"),
     name: formData.get("name"),
     email: formData.get("email"),
@@ -116,7 +117,7 @@ const mockAreas = [
   {
     id: "3",
     name: "Reserva de Mesa",
-    cakebdarId: "9a317cfa23845f707090896bed13959a525c74fe97c03d77e2d3985ebc99bbfb@group.calendar.google.com",
+    calendarId: "9a317cfa23845f707090896bed13959a525c74fe97c03d77e2d3985ebc99bbfb@group.calendar.google.com",
     basePrice: 0,
     minPeople: 1,
     maxPeople: 12,
@@ -264,6 +265,7 @@ export default function Reservation() {
     const endDateTime = generateDateTime(date, endTime, true, startTime);
     submit({
       areaId: area.id,
+      calendarId: (area as any).calendarId ?? "",
       areaName: area.name,
       name, email, phone, date, startTime, endTime,
       startDateTime, endDateTime, people,

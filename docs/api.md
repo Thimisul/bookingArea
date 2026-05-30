@@ -104,6 +104,7 @@ Retorna os detalhes completos de uma área, incluindo produtos disponíveis para
 
 | Campo                   | Tipo      | Descrição |
 |-------------------------|-----------|-----------|
+| `calendarId`            | string    | ID do Google Calendar da área — usado pelo n8n para criar o evento no calendário correto |
 | `basePrice`             | number    | Taxa de reserva em R$. `0` = sem taxa (ex: Reserva de Mesa) |
 | `minPeople`             | number    | Mínimo de pessoas |
 | `maxPeople`             | number    | Máximo de pessoas |
@@ -126,6 +127,7 @@ Cria uma nova reserva. Substitui o envio direto ao webhook n8n — o backend pod
 ```json
 {
   "areaId": "1",
+  "calendarId": "6a5434a1f376e4c3aade9330128fd8afa3d5d84f6c934fb9acd36c36605794d9@group.calendar.google.com",
   "areaName": "Churrasqueira Bar",
   "name": "João Silva",
   "email": "joao@email.com",
