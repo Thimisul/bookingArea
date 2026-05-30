@@ -192,7 +192,12 @@ export default function MyReservation() {
               </div>
             )}
             <div className="border-t border-white/8 pt-3 flex justify-between items-center">
-              <span className="text-white font-bold">Total</span>
+              <div>
+                <p className="text-white font-bold">Total</p>
+                {parseInt(reservation.people) > 1 && (
+                  <p className="text-white/40 text-xs mt-0.5">{formatCurrency(totals.finalTotal / parseInt(reservation.people))} / pessoa</p>
+                )}
+              </div>
               <span className="text-[#ffcc29] font-extrabold text-xl">{formatCurrency(totals.finalTotal)}</span>
             </div>
           </div>
