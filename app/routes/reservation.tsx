@@ -376,8 +376,9 @@ export default function Reservation() {
 
             {/* Pré-venda */}
             {area.hasDiscountProducts && (() => {
-              const categories = [...new Set((area.products as any[]).map(p => p.category))] as string[];
-              const filtered = (area.products as any[]).filter(p => p.category === activeCategory);
+              // v2: restaurar todas as categorias
+              const categories = ["Cervejas"];
+              const filtered = (area.products as any[]).filter(p => p.category === "Cervejas");
               const cartCountByCategory = (cat: string) =>
                 (area.products as any[]).filter(p => p.category === cat).reduce((sum, p) => sum + (cart[p.id] || 0), 0);
 
