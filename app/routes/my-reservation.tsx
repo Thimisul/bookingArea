@@ -252,18 +252,6 @@ export default function MyReservation() {
         {!cancelled && (
           <div className="flex flex-col sm:flex-row gap-3">
             <button
-              onClick={() => navigate(`/reservation/${reservation.areaId}?edit=${token}`)}
-              disabled={!modifiable}
-              className={`flex-1 py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
-                modifiable
-                  ? "bg-white/8 border border-white/15 text-white hover:bg-white/12 hover:border-white/25"
-                  : "bg-white/4 border border-white/8 text-white/25 cursor-not-allowed"
-              }`}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-              Editar reserva
-            </button>
-            <button
               onClick={() => setShowCancelModal(true)}
               disabled={!modifiable}
               className={`flex-1 py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
