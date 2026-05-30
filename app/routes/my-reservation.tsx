@@ -28,17 +28,8 @@ type ReservationData = {
     upfrontFee: number;
     remainingTotal: number;
   };
-  status: "confirmed" | "cancelled";
   createdAt: string;
 };
-
-function canModify(dateStr: string) {
-  const eventDate = new Date(`${dateStr}T00:00:00`);
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(0, 0, 0, 0);
-  return eventDate >= tomorrow;
-}
 
 export default function MyReservation() {
   const { token } = useParams();
@@ -46,28 +37,14 @@ export default function MyReservation() {
 
   const [reservation, setReservation] = useState<ReservationData | null>(null);
   const [notFound, setNotFound] = useState(false);
-  const [showCancelModal, setShowCancelModal] = useState(false);
-  const [cancelled, setCancelled] = useState(false);
-
   useEffect(() => {
     const data = sessionStorage.getItem(`reserva_${token}`);
     if (data) {
-      const parsed = JSON.parse(data) as ReservationData;
-      setReservation(parsed);
-      if (parsed.status === "cancelled") setCancelled(true);
+      setReservation(JSON.parse(data) as ReservationData);
     } else {
       setNotFound(true);
     }
   }, [token]);
-
-  const handleCancel = () => {
-    if (!reservation) return;
-    const updated = { ...reservation, status: "cancelled" as const };
-    sessionStorage.setItem(`reserva_${token}`, JSON.stringify(updated));
-    setReservation(updated);
-    setCancelled(true);
-    setShowCancelModal(false);
-  };
 
   const formatCurrency = (v: number) =>
     new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
@@ -105,7 +82,6 @@ export default function MyReservation() {
     );
   }
 
-  const modifiable = canModify(reservation.date) && !cancelled;
   const { totals } = reservation;
 
   return (
@@ -133,27 +109,13 @@ export default function MyReservation() {
       <main className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-5">
 
         {/* Status banner */}
-        {cancelled ? (
-          <div className="flex items-center gap-3 p-4 rounded-2xl bg-red-500/10 border border-red-500/20">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
-            <div>
-              <p className="text-red-400 font-semibold text-sm">Reserva cancelada</p>
-              <p className="text-red-400/60 text-xs">Esta reserva foi cancelada e não está mais ativa.</p>
-            </div>
+        <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <div>
+            <p className="text-emerald-400 font-semibold text-sm">Reserva solicitada</p>
+            <p className="text-emerald-400/60 text-xs">Entraremos em contato para confirmar e cobrar o sinal.</p>
           </div>
-        ) : (
-          <div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#34d399" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-            <div>
-              <p className="text-emerald-400 font-semibold text-sm">Reserva solicitada</p>
-              <p className="text-emerald-400/60 text-xs">
-                {modifiable
-                  ? "Entraremos em contato para confirmar e cobrar o sinal."
-                  : "Prazo para alterações encerrado — o evento é amanhã ou já passou."}
-              </p>
-            </div>
-          </div>
-        )}
+        </div>
 
         {/* Área + data */}
         <div className="bg-[#283e31]/70 backdrop-blur-sm border border-white/8 rounded-3xl overflow-hidden">
@@ -248,61 +210,8 @@ export default function MyReservation() {
           </div>
         </div>
 
-        {/* Ações */}
-        {!cancelled && (
-          <div className="flex flex-col sm:flex-row gap-3">
-            <button
-              onClick={() => setShowCancelModal(true)}
-              disabled={!modifiable}
-              className={`flex-1 py-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-2 transition-all ${
-                modifiable
-                  ? "bg-red-500/10 border border-red-500/25 text-red-400 hover:bg-red-500/15 hover:border-red-500/35"
-                  : "bg-white/4 border border-white/8 text-white/25 cursor-not-allowed"
-              }`}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
-              Cancelar reserva
-            </button>
-          </div>
-        )}
-
-        {!modifiable && !cancelled && (
-          <p className="text-center text-xs text-white/30">
-            Alterações e cancelamentos só são permitidos até 1 dia antes do evento.
-          </p>
-        )}
       </main>
 
-      {/* Modal de cancelamento */}
-      {showCancelModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center px-6 bg-black/60 backdrop-blur-sm">
-          <div className="bg-[#283e31] border border-white/10 rounded-3xl p-8 max-w-sm w-full space-y-5 shadow-2xl">
-            <div className="flex flex-col items-center text-center gap-3">
-              <div className="w-14 h-14 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-              </div>
-              <h3 className="text-xl font-bold text-white">Cancelar reserva?</h3>
-              <p className="text-white/50 text-sm leading-relaxed">
-                Esta ação não pode ser desfeita. O sinal pago não é reembolsável conforme os termos de reserva.
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowCancelModal(false)}
-                className="flex-1 py-3 rounded-2xl bg-white/6 border border-white/10 text-white/80 font-semibold text-sm hover:bg-white/10 transition-all"
-              >
-                Voltar
-              </button>
-              <button
-                onClick={handleCancel}
-                className="flex-1 py-3 rounded-2xl bg-red-500/15 border border-red-500/30 text-red-400 font-bold text-sm hover:bg-red-500/20 transition-all"
-              >
-                Confirmar cancelamento
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
