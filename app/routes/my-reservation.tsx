@@ -195,18 +195,6 @@ export default function MyReservation() {
               <span className="text-white font-bold">Total</span>
               <span className="text-[#ffcc29] font-extrabold text-xl">{formatCurrency(totals.finalTotal)}</span>
             </div>
-            {totals.upfrontFee > 0 && (
-              <div className="bg-white/4 border border-white/6 rounded-2xl p-4 space-y-2">
-                <div className="flex justify-between text-xs text-white/50">
-                  <span>Sinal pago</span>
-                  <span>{formatCurrency(totals.upfrontFee)}</span>
-                </div>
-                <div className="flex justify-between text-xs text-emerald-400 font-semibold">
-                  <span>Restante no local</span>
-                  <span>{formatCurrency(totals.remainingTotal)}</span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
